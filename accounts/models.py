@@ -3,10 +3,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Group,
 from django.utils.translation import gettext_lazy as _
 
 
-# Create your models here.
-
 class MyAccountManager(BaseUserManager):
-    def create_user(self, first_name, last_name, phone_number, password=None):
+    def create_user(self, first_name, last_name, phone_number, password=None, is_superuser=False):
         if not phone_number:
             raise ValueError('User must have a phone_number')
 
@@ -16,9 +14,8 @@ class MyAccountManager(BaseUserManager):
             last_name = last_name,
         )
 
-        user.is_active = True
         user.set_password(password)
-        user.save(using=self._db)
+        user.save()
         return user
 
     def create_superuser(self, first_name, last_name, phone_number, password):
@@ -28,18 +25,17 @@ class MyAccountManager(BaseUserManager):
             first_name = first_name,
             last_name = last_name,
         )
-        user.is_admin = True
         user.is_active = True
         user.is_staff = True
         user.is_superuser = True
-        user.save(using=self._db)
+        user.save()
         return user
 
 
 
 class Account(AbstractBaseUser, PermissionsMixin):
-    first_name      = models.CharField(max_length=50, null=True, blank=True, verbose_name="First Name")
-    last_name       = models.CharField(max_length=50, null=True, blank=True, verbose_name='Last Name')
+    first_name      = models.CharField(max_length=50, verbose_name="First Name")
+    last_name       = models.CharField(max_length=50, verbose_name='Last Name')
     username        = models.CharField(max_length=50, unique=True, null=True, blank=True)
     phone_number    = models.CharField(max_length=50, null=True, blank=True,  unique=True, verbose_name='Phone Number')
 
@@ -59,11 +55,11 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.phone_number)
 
-    def has_perm(self, perm, obj=None):
-        return self.is_admin
+    # def has_perm(self, perm, obj=None):
+    #     return self.is_admin
 
-    def has_module_perms(self, add_label):
-        return True
+    # def has_module_perms(self, add_label):
+    #     return True
 
 
 class UserProfile(models.Model):
