@@ -1,0 +1,534 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% load mptt_tags %}
+{% load prettify_price %}
+{% block content %}
+    {% block css %}
+        <style>
+
+            .filter-price {
+                width: 220px;
+                border: 0;
+                padding: 0;
+                margin: 0;
+            }
+
+            .price-title {
+                position: relative;
+                color: #fff;
+                font-size: 14px;
+                line-height: 1.2em;
+                font-weight: 400;
+            }
+
+            .price-field {
+                position: relative;
+                width: 100%;
+                height: 36px;
+                box-sizing: border-box;
+                background: rgba(248, 247, 244, 0.2);
+                padding-top: 15px;
+                padding-left: 16px;
+                border-radius: 3px;
+            }
+
+            .price-field input[type=range] {
+                position: absolute;
+            }
+
+            /* Reset style for input range */
+
+            .price-field input[type=range] {
+                width: 188px;
+                height: 2px;
+                border: 0;
+                outline: 0;
+                box-sizing: border-box;
+                border-radius: 5px;
+                pointer-events: none;
+                -webkit-appearance: none;
+            }
+
+            .price-field input[type=range]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+            }
+
+            .price-field input[type=range]:active,
+            .price-field input[type=range]:focus {
+                outline: 0;
+            }
+
+            .price-field input[type=range]::-ms-track {
+                width: 188px;
+                height: 2px;
+                border: 0;
+                outline: 0;
+                box-sizing: border-box;
+                border-radius: 5px;
+                pointer-events: none;
+                background: transparent;
+                border-color: transparent;
+                color: transparent;
+                border-radius: 5px;
+            }
+
+            /* Style toddler input range */
+
+            .price-field input[type=range]::-webkit-slider-thumb {
+                /* WebKit/Blink */
+                position: relative;
+                -webkit-appearance: none;
+                margin: 0;
+                border: 0;
+                outline: 0;
+                border-radius: 50%;
+                height: 10px;
+                width: 10px;
+                margin-top: -4px;
+                background-color: #000;
+                cursor: pointer;
+                cursor: pointer;
+                pointer-events: all;
+                z-index: 100;
+            }
+
+            .price-field input[type=range]::-moz-range-thumb {
+                /* Firefox */
+                position: relative;
+                appearance: none;
+                margin: 0;
+                border: 0;
+                outline: 0;
+                border-radius: 50%;
+                height: 10px;
+                width: 10px;
+                margin-top: -5px;
+                background-color: #000;
+                cursor: pointer;
+                cursor: pointer;
+                pointer-events: all;
+                z-index: 100;
+            }
+
+            .price-field input[type=range]::-ms-thumb {
+                /* IE */
+                position: relative;
+                appearance: none;
+                margin: 0;
+                border: 0;
+                outline: 0;
+                border-radius: 50%;
+                height: 10px;
+                width: 10px;
+                margin-top: -5px;
+                background-color: #000;
+                cursor: pointer;
+                cursor: pointer;
+                pointer-events: all;
+                z-index: 100;
+            }
+
+            /* Style track input range */
+
+            .price-field input[type=range]::-webkit-slider-runnable-track {
+                /* WebKit/Blink */
+                width: 188px;
+                height: 2px;
+                cursor: pointer;
+                background: #000;
+                border-radius: 5px;
+            }
+
+            .price-field input[type=range]::-moz-range-track {
+                /* Firefox */
+                width: 188px;
+                height: 2px;
+                cursor: pointer;
+                background: #000;
+                border-radius: 5px;
+            }
+
+            .price-field input[type=range]::-ms-track {
+                /* IE */
+                width: 188px;
+                height: 2px;
+                cursor: pointer;
+                background: #000;
+                border-radius: 5px;
+            }
+
+            /* Style for input value block */
+
+            .price-wrap {
+                display: flex;
+                justify-content: center;
+                color: #000;
+                font-size: 14px;
+                line-height: 1.2em;
+                font-weight: 400;
+                margin-bottom: 7px;
+            }
+
+            .price-wrap-1,
+            .price-wrap-2 {
+                display: flex;
+            }
+
+            .price-title {
+                margin-right: 5px;
+                backgrund: #d58e32;
+            }
+
+            .price-wrap_line {
+                margin: 0 10px;
+            }
+
+            .price-wrap #one,
+            .price-wrap #two {
+                width: 30px;
+                text-align: right;
+                margin: 0;
+                padding: 0;
+                margin-right: 2px;
+                background: 0;
+                border: 0;
+                outline: 0;
+                color: #000;
+                font-size: 14px;
+                line-height: 1.2em;
+                font-weight: 400;
+            }
+
+            .price-wrap label {
+                text-align: right;
+            }
+
+            /* Style for active state input */
+
+            .price-field input[type=range]:hover::-webkit-slider-thumb {
+                box-shadow: 0 0 0 0.5px #fff;
+                transition-duration: 0.3s;
+            }
+
+            .price-field input[type=range]:active::-webkit-slider-thumb {
+                box-shadow: 0 0 0 0.5px #fff;
+                transition-duration: 0.3s;
+            }
+
+            .children__class {
+                padding: 0;
+                margin: 0;
+                transform: scaleY(0);
+                overflow: hidden;
+                height: 0;
+                transform-origin: top;
+                transition: all .3s linear;
+            }
+
+            .parent__class:hover .children__class {
+                transform: scaleY(1);
+                height: 100%;
+            }
+
+
+            .children__class li {
+                padding-left: 15px;
+            }
+        </style>
+    {% endblock css %}
+
+    <main class="main">
+
+        <div class="container">
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="icon-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'store' %}">{% trans 'Store' %}</a></li>
+                </ol>
+            </nav>
+
+            <div class="row">
+                <div class="col-lg-9 main-content">
+                    <nav class="toolbox sticky-header" data-sticky-options="{'mobile': true}">
+                        <div class="toolbox-left">
+                            <a href="category.html#" class="sidebar-toggle">
+                                <svg data-name="Layer 3" id="Layer_3" viewBox="0 0 32 32"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="15" x2="26" y1="9" y2="9" class="cls-1"></line>
+                                    <line x1="6" x2="9" y1="9" y2="9" class="cls-1"></line>
+                                    <line x1="23" x2="26" y1="16" y2="16" class="cls-1"></line>
+                                    <line x1="6" x2="17" y1="16" y2="16" class="cls-1"></line>
+                                    <line x1="17" x2="26" y1="23" y2="23" class="cls-1"></line>
+                                    <line x1="6" x2="11" y1="23" y2="23" class="cls-1"></line>
+                                    <path d="M14.5,8.92A2.6,2.6,0,0,1,12,11.5,2.6,2.6,0,0,1,9.5,8.92a2.5,2.5,0,0,1,5,0Z"
+                                          class="cls-2"></path>
+                                    <path d="M22.5,15.92a2.5,2.5,0,1,1-5,0,2.5,2.5,0,0,1,5,0Z" class="cls-2"></path>
+                                    <path d="M21,16a1,1,0,1,1-2,0,1,1,0,0,1,2,0Z" class="cls-3"></path>
+                                    <path d="M16.5,22.92A2.6,2.6,0,0,1,14,25.5a2.6,2.6,0,0,1-2.5-2.58,2.5,2.5,0,0,1,5,0Z"
+                                          class="cls-2"></path>
+                                </svg>
+                                <span>Filter</span>
+                            </a>
+
+
+                            <!-- End .toolbox-item -->
+                        </div>
+                        <!-- End .toolbox-left -->
+                    </nav>
+
+                    <div class="row">
+                        {% if products %}
+                            {% for product in products %}
+                                <div class="col-6 col-sm-4">
+                                    <div class="product-default">
+                                        <figure class="img-effect">
+                                            <a href="{{ product.get_url }}">
+
+                                                 {% if not product.images %}
+                                                <img src="{% static 'images/logo-default.png' %}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% else %}
+                                                <img src="{% get_media_prefix %}{{ product.images }}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% endif %}
+                                                {% if product.image_change %}
+                                                    <img src="{{ product.image_change.url }}" width="171.11px"
+                                                         height="171.11px" alt="product"/>
+                                                {% endif %}
+                                            </a>
+                                        </figure>
+                                        <div class="ratings-container">
+                  <span>
+                    <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}"
+                       aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}"
+                       aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}"
+                       aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}"
+                       aria-hidden="true"></i>
+                    <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}"
+                       aria-hidden="true"></i>
+                  </span><!-- End .product-ratings -->
+                                            </div>
+                                            <h3 class="product-title"><a
+                                                    href="{% get_media_prefix %}{{ product.images }}">{{ product.product_name }}</a></h3>
+                                        <div class="product-details">
+                                            <div class="category-wrap">
+                                                <div class="category-list">
+                                                    <a href="../../../store/category/{{ product.category.slug }}"
+                                                       class="product-category">{{ product.category }}</a>
+                                                </div>
+                                            </div>
+
+                                            
+
+                                            
+                                            <!-- End .product-container -->
+
+                                            <div class="price-box">
+                                                <span class="product-price">{% prettify_price product.price %} {% trans 'сум' %}</span>
+                                              
+                                                                                          </div>
+                                            <!-- End .price-box -->
+
+                                            <div class="product-action">
+                                                <a href="{{ product.get_url }}" class="btn-icon btn-add-cart"><i
+                                                        class="fa fa-arrow-right"></i><span>{% trans 'VIEW DETAILS' %}</span></a>
+                                            </div>
+                                        </div>
+                                        <!-- End .product-details -->
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div>
+                                <h2>{% trans 'No result found. Please try again.' %}</h2>
+                            </div>
+                        {% endif %}
+
+
+                        <!-- End .col-sm-4 -->
+                    </div>
+                    <!-- End .row -->
+                    <nav class="mt-4" aria-label="Page navigation sample">
+                        {% if products.has_other_pages %}
+                            <ul class="pagination">
+                                {% if products.has_previous %}
+                                    <li class="page-item"><a class="page-link"
+                                                             href="?page={{ products.previous_page_number }}">{% trans 'Previous' %}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled"><a class="page-link"
+                                                                      href="#">{% trans 'Previous' %}</a></li>
+                                {% endif %}
+
+                                {% for i in products.paginator.page_range %}
+                                    {% if products.number == i %}
+                                        <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if products.has_next %}
+                                    <li class="page-item"><a class="page-link"
+                                                             href="?page={{ products.next_page_number }}">{% trans 'Next' %}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled"><a class="page-link" href="#">{% trans 'Next' %}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    </nav>
+
+                </div>
+                <!-- End .col-lg-9 -->
+
+                <aside class="sidebar-shop col-lg-3 order-lg-first mobile-sidebar">
+                    <div class="sidebar-wrapper">
+                        <div class="widget">
+                            <h3 class="widget-title">
+                                <a data-toggle="collapse" href="category.html#widget-body-2" role="button"
+                                   aria-expanded="true" aria-controls="widget-body-2">{% trans 'Categories' %}</a>
+                            </h3>
+
+                            <div class="collapse show" id="widget-body-2">
+                                <div class="widget-body">
+                                    <ul class="cat-list">
+                                        {% recursetree categories %}
+                                            <li class="parent__class">
+
+                                                <a href="../../../store/category/{{ node.slug }}"
+                                                   class="sf-with-ul"></i>{{ node.name }}</a>
+                                                {% if not node.is_leaf_node %}
+                                                    <ul class="children__class">
+
+                                                        <li>
+
+                                                            {{ children }}
+
+                                                        </li>
+                                                    </ul>
+                                                {% endif %}
+                                            </li>
+                                        {% endrecursetree %}
+                                    </ul>
+                                </div>
+                                <!-- End .widget-body -->
+                            </div>
+                            <!-- End .collapse -->
+                        </div>
+                        <!-- End .widget -->
+                        <div class="widget">
+                            <h3 class="widget-title">
+                                <a data-toggle="collapse" href="category.html#widget-body-2" role="button"
+                                   aria-expanded="true" aria-controls="widget-body-2">{% trans 'Brands' %}</a>
+                            </h3>
+
+                            <div class="collapse show" id="widget-body-2">
+                                <div class="widget-body">
+                                    <ul class="cat-list">
+                                        {% for brand in brands %}
+                                            <li>
+                                                <a href="{{ brand.get_url }}"
+                                                   class="sf-with-ul"></i>{{ brand.brand_name }}</a>
+                                            </li>
+                                        {% endfor %}
+                                        <li>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- End .widget-body -->
+                            </div>
+                            <!-- End .collapse -->
+                        </div>
+
+                        <div class="widget">
+                            <div class="wrapper">
+                                <div>
+                                    <fieldset class="filter-price m-auto">
+
+                                        <form class="" action=" " method="GET">
+
+
+                                            <div class="price-field">
+                                                <input type="range" min="0" max="1000000" value="0" id="lower">
+                                                <input type="range" min="0" max="1000000" value="100000" id="upper">
+                                            </div>
+                                            <div class="price-wrap">
+                                                <div class="price-wrap-1">
+                                                    <input readonly name="lower" id="one" style="width:
+60px">
+                                                    <label for="one">сум</label>
+                                                </div>
+                                                <div class="price-wrap_line">-</div>
+                                                <div class="price-wrap-2">
+                                                    <input readonly name="upper" id="two" style="width:
+60px">
+                                                    <label for="two">сум</label>
+                                                </div>
+                                            </div>
+
+                                            <button class="w-100 m-auto btn btn-primary text-white" name="submit">
+                                                Filter
+                                            </button>
+                                        </form>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End .widget -->
+
+                    </div>
+                    <!-- End .sidebar-wrapper -->
+                </aside>
+                <!-- End .col-lg-3 -->
+            </div>
+
+            <!-- End .row -->
+        </div>
+        <!-- End .container -->
+
+        <div class="mb-4"></div>
+        <!-- margin -->
+    </main>
+{% endblock %}
+{% block js %}
+    <script>
+        var lowerSlider = document.querySelector('#lower');
+        var upperSlider = document.querySelector('#upper');
+
+        document.querySelector('#two').value = upperSlider.value;
+        document.querySelector('#one').value = lowerSlider.value;
+
+        var lowerVal = parseInt(lowerSlider.value);
+        var upperVal = parseInt(upperSlider.value);
+
+        upperSlider.oninput = function () {
+            lowerVal = parseInt(lowerSlider.value);
+            upperVal = parseInt(upperSlider.value);
+
+            if (upperVal < lowerVal + 4) {
+                lowerSlider.value = upperVal - 4;
+                if (lowerVal == lowerSlider.min) {
+                    upperSlider.value = 4;
+                }
+            }
+            document.querySelector('#two').value = this.value
+        };
+
+        lowerSlider.oninput = function () {
+            lowerVal = parseInt(lowerSlider.value);
+            upperVal = parseInt(upperSlider.value);
+            if (lowerVal > upperVal - 4) {
+                upperSlider.value = lowerVal + 4;
+                if (upperVal == upperSlider.max) {
+                    lowerSlider.value = parseInt(upperSlider.max) - 4;
+                }
+            }
+            document.querySelector('#one').value = this.value
+        };
+    </script>
+{% endblock js %}

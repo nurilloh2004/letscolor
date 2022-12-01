@@ -1,0 +1,254 @@
+{% load i18n static %}
+{% load mptt_tags %}
+{% load reverse_lang %}
+{% load current_lang %}
+{% block css %}
+    <style>
+
+        .header-menu {
+            width: 100%;
+        }
+
+        .nav-categories {
+            align-items: center;
+        }
+
+        .header-menu {
+            background-color: unset;
+        }
+
+        .header-bottom .container:before {
+            content: unset !important;
+            display: none !important;
+        }
+
+        .nav-categories li {
+            max-width: unset;
+            flex: unset;
+            margin-right: 40px;
+        }
+
+        .sticky-header.header-middle.fixed {
+            height: unset;
+            padding: 30px 0;
+        }
+
+        .sticky-header.fixed .logo {
+            max-width: 11.1rem;
+        }
+
+        .sticky-header.fixed .logo img {
+            transform: scale(1);
+        }
+
+        .nav-categories li a {
+            display: flex;
+            align-items: center;
+            color: #323232;
+        }
+
+        .nav-categories li i {
+            margin: 0 8px 0 0;
+        }
+
+        .header-menu, .nav__wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav__curr {
+            padding-right: 30px;
+            border-right: 2px solid #323232;
+        }
+
+        .nav__curr a, .nav__lang a {
+            font-size: 14px;
+            color: #323232;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 5px;
+            transition: color .3s linear;
+        }
+
+        .nav__lang {
+            padding-left: 30px;
+        }
+
+        .nav__curr a:hover,
+        .nav__lang a:hover {
+            color: #08368b ;
+        }
+
+        a.link__active {
+            color: #08368b ;
+        }
+
+    </style>
+{% endblock %}
+
+<header class="header">
+    <div class="header-middle sticky-header" data-sticky-options="{'mobile': false}">
+        <div class="container">
+            <div class="header-left">
+                <button class="mobile-menu-toggler pl-0" type="button">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <div class="logo">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logo1.png' %}" alt="Porto Logo" width="111" height="44">
+                    </a>
+                </div> 
+                <div
+                        class="header-search header-search-inline header-search-category w-lg-max text-right d-none d-sm-block">
+                    <a href="#" class="search-toggle" role="button"><i class="icon-magnifier"></i></a>
+                    <form action="{% url 'search' %}" class="search" method='GET'>
+                        <div class="header-search-wrapper">
+                            <input type="search" class="form-control font-italic" name="keyword"
+                                   placeholder="{% trans "I'm searching for..." %}" required>
+                            <button class="btn icon-magnifier" title="search" type="submit"></button>
+                        </div><!-- End .header-search-wrapper -->
+                    </form>
+                </div><!-- End .header-search -->
+            </div>
+
+            <div class="header-right">
+                <span class="separator d-none d-lg-inline"></span>
+
+                <div class="contact-widget d-none d-lg-block">
+                    <h7 class="text-body mb-0">{% trans 'Call us now' %}</h7>
+                    <h3 class="contact-phone ls-n-10 text-dark">{% trans 'номер компании' %}</h3>
+                    <a href="https://t.me/letscolouruz" class="d-block font2 " target="_blank">
+                        <h7 class="_telegram"><i class="fab fa-telegram-plane"></i>{% trans 'or chat online' %}</h7>
+                    </a>
+                </div>
+
+                <span class="separator d-none d-lg-inline"></span>
+                {% if user.id is None %}
+                <a class="header-icon">
+                    <div class="header-user">
+                        <i class="icon-user-2"></i>
+                        <div class="header-userinfo d-none d-lg-block">
+                            <span class="d-inline-block font2 line-height-1">{% trans 'Hello!' %}</span><br>
+                            <a href="{% url 'login' %}" class="mb-0">{% trans 'Sign in' %}</a><span class="dark-transp"> | </span>
+                            <a href="{% url 'register' %}" sclass="mb-0">{% trans 'Register' %}</a>
+                        </div>
+                    </div>
+                </a>
+                {% else %}
+                <a class="header-icon">
+                    <div class="header-user">
+                        <i class="icon-user-2"></i>
+                        <div class="header-userinfo d-none d-lg-block">
+                            <span class="d-inline-block font2 line-height-1">{% trans 'Hello' %} <b>{{user.first_name}}!</b></span><br>
+                            <a href="{% url 'home' %}" class="mb-0">{% trans 'Home' %}</a><span class="dark-transp"> | </span>
+                            <a href="{% url 'logout' %}" sclass="mb-0">{% trans 'Log out' %}</a>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+
+
+                <div class="dropdown cart-dropdown">
+                    {#                            <a href="{% url 'cart' %}" title="Cart" class="dropdown-toggle cart-toggle" role="button"#}
+                    {#                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">#}
+                    <a href="{% url 'cart' %}">
+                        <i class="minicart-icon"></i>
+                        <span class="cart-count badge-circle">{{ cart_count }}</span>
+                    </a>
+
+                    <div class="cart-overlay"></div>
+
+                    <div class="dropdown-menu mobile-cart">
+
+                            <div class="dropdown-cart-products">
+                                {% for cart_item in cart_items %}
+                                    <div class="product">
+                                        <div class="product-details">
+                                            <h4 class="product-title">
+                                                <a href="{{ cart_item.product.get_url }}">{{ cart_item.product.product.name }}</a>
+                                            </h4>
+
+                                            <span class="cart-product-info">
+                                                    <span class="cart-product-qty">{{ cart_item.product.quantity }}</span>
+                                                    × {{ cart_item.product.price }}
+                                                </span>
+                                        </div><!-- End .product-details -->
+
+                                        <figure class="product-image-container">
+                                            <a href="{{ cart_item.product.get_url }}" class="product-image">
+                                                <img src="{% get_media_prefix %}{{ cart_item.product.images }}" alt="product"
+                                                     width="80" height="80">
+                                            </a>
+
+                                            <a href="demo26.html#" class="btn-remove"
+                                               title="Remove Product"><span>×</span></a>
+                                        </figure>
+                                    </div>
+                                {% endfor %}
+
+                            </div><!-- End .cart-product -->
+
+                            <div class="dropdown-cart-total">
+                                <span>SUBTOTAL:</span>
+
+                                <span class="cart-total-price float-right">{{ total }}</span>
+                            </div><!-- End .dropdown-cart-total -->
+
+                        </div><!-- End .dropdownmenu-wrapper -->
+                    </div><!-- End .dropdown-menu -->
+                </div><!-- End .dropdown -->
+            </div>
+        </div>
+    </div>
+</header><!-- End .header -->
+
+<!-- Mobile version -->
+<div class="mobile-menu-overlay"></div>
+<div class="mobile-menu-container">
+    <div class="mobile-menu-wrapper">
+         <div class="nav__wrapper">
+
+                    <div class="nav__lang" style="margin-left: 62px;">
+                        <a href="{% reverse_lang request 'ru' %}" style="color:#ffff"
+                           class="{% if request.LANGUAGE_CODE == 'ru' %}link__active{% endif %}">RU</a>
+                        <a href="{% reverse_lang request 'uz' %}" style="color:#ffff"
+                           class="{% if request.LANGUAGE_CODE == 'uz' %}link__active{% endif %}">UZ</a>
+                        <a href="{% reverse_lang request 'en' %}" style="color:#ffff"
+                           class="{% if request.LANGUAGE_CODE == 'en' %}link__active{% endif %}">EN</a>
+                        </ul>
+                    </div>
+                </div>
+        <span class="mobile-menu-close"><i class="fa fa-times"></i></span>
+        <nav class="mobile-nav">
+            <ul class="mobile-menu">
+                <li><a href="../../../">{% trans 'Home' %}</a></li>
+                {% recursetree categories %}
+                    <li>
+                        <a href="../../../store/category/{{ node.slug }}"
+                           class="sf-with-ul"></i>{{ node.name }}</a>
+                        {% if not node.is_leaf_node %}
+                            <ul>
+                                <li>
+                                    {{ children }}
+                                </li>
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endrecursetree %}
+
+            </ul>
+
+        </nav><!-- End .mobile-nav -->
+
+       
+
+        <form class="search-wrapper mb-2" action="{% url 'search' %}"  method='GET'>
+                            <input class="form-control mb-0" type="search" name="keyword"
+                                   placeholder="{% trans "I'm searching for..." %}" required>
+                                       <button class="btn icon-search text-white bg-transparent p-0" title="search" type="submit"></button>
+
+                    </form>
+    </div><!-- End .mobile-menu-wrapper -->
+</div>
+<!-- End Mobile version -->

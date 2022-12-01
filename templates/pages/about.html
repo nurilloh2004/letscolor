@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+
+{% block content %}
+    {% for item in about %}
+    <main class="main about">
+        <div class="page-header page-header-bg text-left"
+             style="background: 50%/cover #D4E1EA url('assets/images/page-header-bg.jpg');">
+            <div class="container">
+                <h1>{{ item.title }}</h1>
+            </div><!-- End .container -->
+        </div><!-- End .page-header -->
+
+        <nav aria-label="breadcrumb" class="breadcrumb-nav">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="icon-home"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{% trans 'About Us' %}</li>
+                </ol>
+            </div><!-- End .container -->
+        </nav>
+
+        <div class="about-section">
+            <div class="container">
+                {{ item.content|safe }}
+            </div><!-- End .container -->
+        </div><!-- End .about-section -->
+
+        <div class="features-section bg-gray">
+            <div class="container">
+                <h2 class="subtitle">{% trans 'WHY CHOOSE US' %}</h2>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="feature-box bg-white">
+                            <i class="icon-shipped"></i>
+
+                            <div class="feature-box-content p-0">
+                                <h3>{% trans 'Free Shipping' %}</h3>
+                                <p>{% trans 'Free Shipping on Orders Over $99' %}</p>
+                            </div><!-- End .feature-box-content -->
+                        </div><!-- End .feature-box -->
+                    </div><!-- End .col-lg-4 -->
+
+                    <div class="col-lg-4">
+                        <div class="feature-box bg-white">
+                            <i class="icon-us-dollar"></i>
+
+                            <div class="feature-box-content p-0">
+                                <h3>{% trans 'The Best In Our Business' %}</h3>
+                                <p>{% trans 'Only The Best Products' %}</p>
+                            </div><!-- End .feature-box-content -->
+                        </div><!-- End .feature-box -->
+                    </div><!-- End .col-lg-4 -->
+
+                    <div class="col-lg-4">
+                        <div class="feature-box bg-white">
+                            <i class="icon-online-support"></i>
+
+                            <div class="feature-box-content p-0">
+                                <h3>{% trans '100% Secure Payments' %}</h3>
+                                <p>{% trans 'We ensure secure payment!' %}</p>
+                            </div><!-- End .feature-box-content -->
+                        </div><!-- End .feature-box -->
+                    </div><!-- End .col-lg-4 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .features-section -->
+
+        <div class="counters-section bg-gray">
+            <div class="container">
+                <div class="row">
+                    <div class="col-6 col-md-4 count-container">
+                        <div class="count-wrapper">
+                                <span class="count-to" data-fromvalue="0" data-tovalue="200" data-duration="2000"
+                                      data-append="+">50</span>
+                        </div><!-- End .count-wrapper -->
+                        <h4 class="count-title">MILLION CUSTOMERS</h4>
+                    </div><!-- End .col-md-4 -->
+
+                    <div class="col-6 col-md-4 count-container">
+                        <div class="count-wrapper">
+                                <span class="count-to" data-fromvalue="0" data-tovalue="1800" data-duration="2000"
+                                      data-append="+">0</span>
+                        </div><!-- End .count-wrapper -->
+                        <h4 class="count-title">TEAM MEMBERS</h4>
+                    </div><!-- End .col-md-4 -->
+
+                    <div class="col-6 col-md-4 count-container">
+                        <div class="count-wrapper line-height-1">
+                                <span class="count-to" data-fromvalue="0" data-tovalue="24" data-duration="2000"
+                                      data-append="HR">0</span>
+                        </div><!-- End .count-wrapper -->
+                        <h4 class="count-title">SUPPORT AVAILABLE</h4>
+                    </div><!-- End .col-md-4 -->
+
+                    <div class="col-6 col-md-4 count-container">
+                        <div class="count-wrapper">
+                                <span class="count-to" data-fromvalue="0" data-tovalue="265" data-duration="2000"
+                                      data-append="+">0</span>
+                        </div><!-- End .count-wrapper -->
+                        <h4 class="count-title">SUPPORT AVAILABLE</h4>
+                    </div><!-- End .col-md-4 -->
+
+                    <div class="col-6 col-md-4 count-container">
+                        <div class="count-wrapper line-height-1">
+                                <span class="count-to" data-fromvalue="0" data-tovalue="99" data-duration="2000"
+                                      data-append="%">0</span>
+                        </div><!-- End .count-wrapper -->
+                        <h4 class="count-title">SUPPORT AVAILABLE</h4>
+                    </div><!-- End .col-md-4 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .counters-section -->
+    </main><!-- End .main -->
+    {% endfor %}
+{% endblock %}

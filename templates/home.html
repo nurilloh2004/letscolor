@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n static %}
+{% load mptt_tags %}
+{% load reverse_lang %}
+{% load current_lang %}
+{% load prettify_price %}
+
+{% block css %}
+    <style>
+        .menu-vertical > li > a {
+            padding: 1.2rem 3rem 1.4rem 0.5rem;
+        }
+
+        .banner10 .owl-carousel .owl-stage,
+        .banner10 .owl-carousel .owl-stage-outer,
+        .banner10 .owl-carousel.owl-drag .owl-item,
+        .banner10 .owl-carousel .owl-item img {
+            height: 100% !important;
+        }
+
+        .banner10 {
+            margin-top: 50px;
+        }
+
+        .banner10 .banner__img {
+            height: 400px;
+            border-radius: 20px;
+        }
+
+        .banner10 .banner__img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 20px;
+        }
+
+        .menu__carousel {
+            margin-top: 30px;
+        }
+
+        .menu__carousel .item a {
+            display: block;
+            color: #323232;
+            text-align: center;
+        }
+
+        .menu__carousel .item a img {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .menu__carousel .item a span {
+            display: block;
+            margin-top: 20px;
+        }
+
+
+        .category-corousel .item {
+            border: 2px solid;
+            overflow: hidden;
+            padding: 10px 0px;
+            border-color: #08368b;
+            border-radius: 20px;
+        }
+
+        .menu__carousel .item a span {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            margin-top: 14px;
+        }
+
+        .menu__carousel .item a img {width: 100%;height: 80px;transition: all .4s ease;}
+        .inner-icon:not(.product-widget):hover figure {
+            box-shadow: none;
+        }
+
+        @media(max-width: 576px) {
+            .banner10 .banner__img {
+               height: 213px;     
+            }
+            .banner10 .banner__img img {
+                height: 213px;
+            }
+        }
+
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="header-bottom d-lg-flex d-none" data-sticky-options="{'mobile': false}">
+        <div class="container">
+            <div class="header-menu">
+                <ul class="nav-categories">
+                    {% for menu in menu %}
+                        <li>
+                            <a href="{{ menu.link }}">
+                                <i class="{{ menu.icon }}"></i>
+                                {{ menu.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="nav__wrapper">
+
+                    <div class="nav__lang">
+                        <a href="{% reverse_lang request 'ru' %}"
+                           class="{% if request.LANGUAGE_CODE == 'ru' %}link__active{% endif %}">RU</a>
+                        <a href="{% reverse_lang request 'uz' %}"
+                           class="{% if request.LANGUAGE_CODE == 'uz' %}link__active{% endif %}">UZ</a>
+                        <a href="{% reverse_lang request 'en' %}"
+                           class="{% if request.LANGUAGE_CODE == 'en' %}link__active{% endif %}">EN</a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-wrapper">
+        <main class="main">
+            <section class="intro-section">
+                <div class="container">
+                    <div class="category-corousel">
+                        <div class="owl-carousel menu__carousel owl-theme" data-owl-options="{
+                        'loop': true,
+                        'margin': 5,
+                        'nav': false,
+                        'dots': false,
+                        'responsive': {
+                            '0': {
+                                'items': 3
+                            },
+                            '600': {
+                                'items': 5
+                            },
+                            '1000': {
+                                'items': 7
+                            }
+                        }
+                    }">
+                        {% recursetree categories %}
+                            <div class="item">
+                                <a href="../../../store/category/{{ node.slug }}">
+                                    {% if node.icon %}
+                                        <img src="{{ node.icon.url }}"
+                                             alt="">
+                                    {% endif %}
+                                    <span>{{ node.name }}</span>
+
+                                </a>
+                            </div>
+                        {% endrecursetree %}
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="banner10 h-100 owl-carousel owl-theme ">
+                                {% for banner in banners %}
+                                <div class="item">
+                                    <div class="banner__img">
+                                        <img src="{{ banner.image.url }}" class="img-fluid" alt="Lets color">
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="newsletter-section appear-animate" data-animation-name="fadeInUpShorter"
+                     data-animation-delay="200">
+                <div class="container">
+                </div>
+            </section>
+
+            <section class="popular-section">
+                <div class="container">
+                    <div class="appear-animate" data-animation-name="fadeInUpShorter" data-animation-delay="400">
+                        <h2 class="section-title pb-3 m-b-4">{% trans 'Top Seller' %}</h2>
+
+                        <div class="product__carousel owl-carousel owl-theme mb-2">
+                            {% for product in r_products %}
+                                <div class="item">
+                                    <div class="product-default inner-quickview inner-icon">
+                                        <figure class="img-effect">
+                                            <a href="{{ product.get_url }}">
+                                                {% if not product.images %}
+                                                <img src="{% static 'images/logo-default.png' %}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% else %}
+                                                <img src="{% get_media_prefix %}{{ product.images }}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% endif %}
+                                                {% if product.image_change %}
+                                                    <img src="{{ product.image_change.url }}" width="171.11px"
+                                                         height="171.11px" alt="product"/>
+                                                {% endif %}
+                                            </a>
+                                        </figure>
+                                        <div class="product-details">
+                                            <div class="ratings-container">
+                                            <span>
+                                                <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                            </span>
+                                                <!-- End .product-ratings -->
+                                            </div><!-- End .product-container -->
+                                            <h3 class="product-title">
+                                                <a href="{{ product.get_url }}">{{ product.product_name }}</a>
+                                            </h3>
+                                            <div class="category-wrap">
+                                                <div class="category-list">
+                                                    <a href="store/category/{{ product.category.slug }}"
+                                                       class="product-category">{{ product.category }}</a>
+                                                </div>
+
+                                            </div>
+                                            
+                                            
+                                            <div class="price-box">
+                                                <span class="product-price">{% prettify_price product.price %} {% trans 'сум' %}</span>
+                                            </div><!-- End .price-box -->
+                                        </div><!-- End .product-details -->
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="products-container bg-gray mt-1">
+                <div class="container">
+                    <div class="row custom-products no-gutters appear-animate" data-animation-name="fadeInUpShorter"
+                         data-animation-delay="200">
+                        {% for product in n_products %}
+                            <div class="col-sm-6 col-md-4">
+                                <div class="product-default inner-icon inner-quickview">
+                                    <figure class="img-effect">
+                                        <a href="{{ product.get_url }}">
+                                            {% if not product.images %}
+                                                <img src="{% static 'images/logo-default.png' %}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% else %}
+                                                <img src="{% get_media_prefix %}{{ product.images }}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% endif %}
+                                                {% if product.image_change %}
+                                                    <img src="{{ product.image_change.url }}" width="171.11px"
+                                                         height="171.11px" alt="product"/>
+                                             {% endif %}
+                                        </a>
+                                    </figure>
+                                    <div class="product-details">
+                                        <div class="category-wrap">
+                                            <div class="category-list">
+                                                <a href="{{ product.category.slug }}"
+                                                   class="product-category">{{ product.category }}</a>
+                                            </div>
+                                        </div>
+                                        <h3 class="product-title">
+                                            <a href="{{ product.get_url }}">{{ product.product_name }}</a>
+                                        </h3>
+                                        <div class="ratings-container">
+                                         <span>
+                                                <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                            </span><!-- End .product-ratings -->
+                                        </div><!-- End .product-container -->
+                                        <div class="price-box">
+                                            <span class="product-price">{% prettify_price product.price %} {% trans 'сум' %}</span>
+                                        </div><!-- End .price-box -->
+                                    </div><!-- End .product-details -->
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+
+
+            <section class="top-sellers-section appear-animate" data-animation-name="fadeIn" data-animation-delay="200">
+                <div class="container">
+                <section class="info-boxes-container appear-animate" data-animation-name="fadeIn"
+                     data-animation-delay="200">
+                <div class="container">
+                    <div class="row">
+                        <div class="info-boxes-slider owl-carousel owl-theme" data-owl-options="{
+                            'margin': 50,
+                            'responsive': {
+                                '576': {
+                                    'items': 2
+                                },
+                                '992': {
+                                    'items': 3
+                                }
+                            }
+                        }">
+                            <div class="info-box info-box-icon-left">
+                                <i class="icon-shipping" style="color:#08368b"></i>
+                                <div class="info-box-content">
+                                    <h4 class="line-height-1">{% trans 'Free Shipping on Orders Over $99' %}</h4>
+                                    <p class="font2 line-height-1 text-body ">{% trans 'Free Shipping on Orders Over $99' %}</p>
+                                </div>
+                            </div>
+
+                            <div class="info-box info-box-icon-left">
+                                <i class="icon-money" style="color:#08368b"></i>
+                                <div class="info-box-content">
+                                    <h4 class="line-height-1">{% trans 'The Best In Our Business' %}</h4>
+                                    <p class="font2 line-height-1 text-body ">{% trans 'Only The Best Products' %}</p>
+                                </div>
+                            </div>
+
+                            <div class="info-box info-box-icon-left">
+                                <i class="icon-secure-payment" style="color:#08368b"></i>
+                                <div class="info-box-content">
+                                    <h4 class="line-height-1">{% trans '100% Secure Payments' %}</h4>
+                                    <p class="font2 line-height-1 text-body ">{% trans 'We ensure secure payment!' %}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+{#                    <div class="banner banner3 d-flex flex-wrap align-items-center"#}
+{#                         style="background: #dc7a1f no-repeat center/cover url({% static 'images/demoes/demo26/banners/banner-3.jpg' %})">#}
+{#                        <div class="col-lg-9 mb-2 mb-lg-0">#}
+{#                            <h2 class="d-inline-block ls-n-20 text-white text-uppercase mb-0"><span class="sale-off">Big#}
+{#                                    sale</span> ALL#}
+{#                                HIGH#}
+{#                                PERFORMANCE ITEMS UP TO 70% OFF</h2>#}
+{#                            <h6 class="d-inline-block mb-0">Online Purchases Only</h6>#}
+{#                        </div>#}
+{#                        <div class="col-lg-3 text-lg-right">#}
+{#                            <a href="demo26-shop.html" class="btn btn-light btn-lg">View Sale</a>#}
+{#                        </div>#}
+{#                    </div>#}
+
+                    <h2 class="section-title pb-3 m-b-4">{% trans 'New Products' %}</h2>
+
+                    <div class="product__carousel owl-carousel owl-theme mb-2">
+                        {% for product in r_products %}
+                            <div class="item">
+                                <div class="product-default inner-quickview inner-icon">
+                                    <figure class="img-effect">
+                                        <a href="{{ product.get_url }}">
+
+                                             {% if not product.images %}
+                                                <img src="{% static 'images/logo-default.png' %}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% else %}
+                                                <img src="{% get_media_prefix %}{{ product.images }}" width="171.11px"
+                                                     height="171.11px" alt="product"/>
+                                                {% endif %}
+                                                {% if product.image_change %}
+                                                    <img src="{{ product.image_change.url }}" width="171.11px"
+                                                         height="171.11px" alt="product"/>
+                                                {% endif %}
+                                        </a>
+                                    </figure>
+                                    <div class="product-details">
+                                        <div class="ratings-container">
+                                            <span>
+                                                <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}"
+                                                   aria-hidden="true"></i>
+                                            </span>
+                                            <!-- End .product-ratings -->
+                                        </div><!-- End .product-container -->
+                                        <h3 class="product-title">
+                                            <a href="{{ product.get_url }}">{{ product.product_name }}</a>
+                                        </h3>
+                                        <div class="category-wrap">
+                                            <div class="category-list">
+                                                <a href="store/category/{{ product.category.slug }}"
+                                                   class="product-category">{{ product.category }}</a>
+                                            </div>
+
+                                        </div>
+                                        <div class="price-box">
+                                            <span class="product-price">{% prettify_price product.price %} {% trans 'сум' %}</span>
+                                        </div><!-- End .price-box -->
+                                    </div><!-- End .product-details -->
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+
+
+            <section class="brands-section">
+                <div class="container">
+                    <h2 class="section-title pb-3 mb-4">{% trans 'Our partners' %}</h2>
+
+                    <div class="brands-slider owl-carousel owl-theme mb-4 appear-animate" data-owl-options="{
+                        'margin': 0
+                    }" data-animation-name="fadeIn" data-animation-delay="400">
+                        {% for brand in brands %}
+                            <a href="{{brand.get_url}}">
+                            {% if brand.brand_image %}
+                                <img src="{{ brand.brand_image.url }}" alt="{{ brand.brand_name }}"
+                                 width="140"
+                                 height="60">
+                            {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <div class="container">
+                <div class="owl-carousel owl-theme" data-owl-options="{
+                        'loop': false,
+                        'margin': 20,
+                        'items': 1,
+                        'responsive': {
+                            '576': {
+                                'items': 2
+                            },
+                            '768': {
+                                'items': 3
+                            }
+                        }
+                    }">
+
+
+                </div>
+            </div>
+
+
+        </main><!-- End .main -->
+
+
+    </div><!-- End .page-wrapper -->
+    <div class="loading-overlay">
+        <div class="bounce-loader">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+    </div>
+
+    <div class="mobile-menu-overlay"></div>
+    <!-- End .mobil-menu-overlay -->
+
+
+    <!-- End .mobile-menu-container -->
+
+{% endblock %}

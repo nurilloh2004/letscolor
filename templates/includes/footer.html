@@ -1,0 +1,186 @@
+{% load i18n static %}
+{% load mptt_tags %}
+
+{% block css %} 
+    <style>
+        .social-icons {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 9;
+            flex-direction: column;
+        }
+        .social-icons .social-icon  {
+            background-color: #08368b!important;
+            border-radius: 100%;
+        }
+        .phone__call {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 20px;
+            background-color: #08368b;
+            text-decoration: none;
+            font-size: 25px;
+            color: white;
+            border-radius: 100%;
+            line-height: 0;
+            z-index: 9;
+        }
+
+        .phone__call::after {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: #08368b;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -999999999;
+            border-radius: 100%;
+            animation: afterAnime 3s linear infinite;
+        }
+
+        .phone__call i {
+            animation: phoneCall 1.5s linear infinite alternate;
+        }
+
+        @keyframes afterAnime {
+            0% {
+                transform: scale(0);
+            }
+            10% {
+                transform: scale(10%);
+            }
+            20% {
+                transform: scale(30%);
+            }
+            40% {
+                transform: scale(50%);
+            }
+            60% {
+                transform: scale(60%);
+            }
+            80% {
+                transform: scale(80%);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(130%);
+                opacity: 0;
+            }
+            
+        }
+
+        @keyframes phoneCall {
+            from {
+                transform: scale(0.7);
+            } to {
+                transform: scale(1);
+            }
+        }
+    </style>
+{%endblock%}
+
+<footer class="footer font2">
+    <div class="container">
+        <div class="footer-middle">
+            <div class="row">
+                <div class="col-lg-5">
+                    <a href="#"><img src="{% static 'images/footer-logo.png' %}" alt="Logo" width="111"
+                                     height="44" class="m-b-4"></a>
+
+                    <div class="contact-widget mb-2 mb-lg-0">
+                        <p>{% trans 'Footer text' %}</p>
+
+                        <div class="row ls-0">
+                            <div class="col-md-2-5">
+                                <div class="footer-item-title">
+                                    <h6 class="text-uppercase text-white mb-0">{% trans 'Questions?' %}</h6>
+                                </div>
+                                <h3 class="ls-n-10 text-primary" style="font-size:2rem;">{% trans 'номер компании' %}</h3>
+                            </div>
+                            <div class="col-md-3-5">
+                                <div class="footer-item-title">
+                                    <h6 class="text-uppercase text-white mb-0">{% trans 'Payment Methods' %}</h6>
+                                </div>
+                                
+                                    <img src="/static/images/payme.png" alt="payment methods" class="footer-payments m-b-3"
+                                     width="295" height="32" style="width: 109px;height: 49px; display: inline-block;">
+
+                                    <img src="/static/images/payments/click.jpg" alt="click methods" class="footer-payments m-b-3"
+                                     width="295" height="32" style="width: 109px;height: 49px; display: inline-block; border-radius: 10px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {# End .col-lg-5#}
+
+                <div class="col-lg-2 col-sm-4">
+                    <div class="widget">
+                        <h4 class="widget-title">{% trans 'Categories' %}</h4>
+                        {% recursetree categories %}
+                            <div class="links">
+                                <a href="../../../store/category/{{ node.slug }}">
+                                    <span>{{ node.name }}</span>
+                                </a>
+                            </div>
+                        {% endrecursetree %}
+                    </div><!-- End .widget -->
+                </div><!-- End .col-lg-2 -->
+                <div class="col-lg-2 col-sm-4">
+                    <div class="widget">
+                        <h4 class="widget-title">{% trans 'Contacts' %}</h4>
+
+                        <ul class="links">
+                            <li>
+                                <a href="#">{% trans 'г.Ташкент, Алмазарский р-он, ул.Карасарай Тараккиет 1-й проезд' %}</a>
+                            </li>
+                            <li><a href="tel:{% trans 'номер телефона 1' %}">{% trans 'номер телефона 1' %}</a></li>
+                            <li><a href="tel:{% trans 'номер телефона 2' %}">{% trans 'номер телефона 2' %}</a></li>
+                            <li><a href="mailto:{% trans 'email footer' %}">{% trans 'email footer' %}</a></li>
+                        </ul>
+                    </div><!-- End .widget -->
+                </div><!-- End .col-lg-2 -->
+                <div class="col-lg-3 col-sm-4">
+                    <div class="widget">
+                        <h4 class="widget-title">{% trans 'Menu' %}</h4>
+
+                        <ul class="links">
+                            {% for menu in menu_footer %}
+                                <li><a href="{{ menu.link }}">{{ menu.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div><!-- End .widget -->
+                </div><!-- End .col-lg-3 -->
+            </div><!-- End .row -->
+            <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap">
+            <p class="footer-copyright py-3 pr-4 mb-0"></p>
+
+            <div class="social-icons py-3">
+                <a href="https://www.facebook.com/letscolouruz/" class="social-icon social-facebook icon-facebook"
+                   target="_blank"
+                   title="Facebook"></a>
+                <a href="https://t.me/letscolouruz"><i class="social-icon social-twitter fa fa-telegram" target="_blank"
+                                                       title="Telegram"></i></a>
+                <a href="https://www.tiktok.com/@letscolouruz"><i class="social-icon social-twitter fab fa-tiktok"
+                                                                  target="_blank"
+                                                                  title="TikTok"></i>
+                 <a href="https://www.youtube.com/channel/UCRBp1SrUleVMVZUdpS3x5xg"><i class="social-icon social-twitter fab fa-youtube"
+                                                                  target="_blank"
+                                                                  title="YouTube"></i>
+                    <a href="https://www.instagram.com/letscolouruz/"
+                       class="social-icon social-instagram icon-instagram" target="_blank"
+                       title="Linkedin"></a>
+            </div><!-- End .social-icons -->
+        </div><!-- End .footer-bottom -->
+        </div><!-- End .footer-middle -->
+    </div><!-- End .container -->
+</footer><!-- End .footer -->
+
+
+<a href="tel: +998338822282" class="phone__call">
+    <i class="fa fa-phone" aria-hidden="true"></i>
+</a>

@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+<style>
+.big-banner img,
+.small-banner img {
+    width: 100%;
+    transition: all .5s ease;
+    transform: scale(1);
+}
+
+.small-banner img {
+    height: 100%;
+    width: 100%;
+}
+
+.big-banner img:hover,
+.small-banner img:hover {
+    transform: scale(1.1);
+}
+.small__banner{
+	display: flex;
+    align-items: center;
+    justify-content: center;
+	transition: all.5s;
+	overflow: hidden;
+	border: 3px solid transparent;
+}
+.small__banner:hover{
+	border: 3px solid blue;
+}
+.card-product-grid{
+	height: 350px;
+    overflow: hidden;
+}
+.product-carousel{
+	position: relative;
+}
+.product-carousel .owl-nav{
+	position: absolute;
+    top: -65px;
+    right: 0;
+}
+.product-carousel .owl-nav button{
+	outline: none;
+    background-color: blue!important;
+    height: 28px;
+    width: 28px;
+    color: #fff!important;
+}
+.new-product-carousel{
+	position: relative;
+}
+.new-product-carousel .owl-nav{
+	position: absolute;
+    top: -65px;
+    right: 0;
+}
+.new-product-carousel .owl-nav button{
+	outline: none;
+    background-color: blue!important;
+    height: 28px;
+    width: 28px;
+    color: #fff!important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% for category in categories %}
+	{% if not category.parent and category.children.all %}
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="store/category/{{category.slug}}" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+			aria-expanded="false">
+			{{category.name}}
+			</a>
+			{% if category.children.all %}
+			<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+				{% for subCategory in category.children.all %}
+				<li><a class="dropdown-item" href="store/category/{{subCategory.slug}}">{{subCategory.name}}</a></li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</li>
+	{% elif not category.parent %}
+		<li class="nav-item">
+			<a class="nav-link " href="store/category/{{category.slug}}" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+			aria-expanded="false">
+			{{category.name}}
+			</a>
+		</li>
+	{% endif %}
+{% endfor %}
+
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="section-intro padding-y-sm">
+	<div class="container">
+
+		<div class="banner-carousel owl-carousel owl-theme">
+			<div class="item">
+				<div class="intro-banner-wrap">
+					<img src="{% static 'images/banners/cover.jpg' %}" class="img-fluid rounded">
+				</div>
+			</div>
+			<div class="item">
+				<div class="intro-banner-wrap">
+					<img src="{% static 'images/banners/cover2.jpg' %}" class="img-fluid rounded">
+				</div>
+			</div>
+		</div>
+
+	</div> <!-- container //  -->
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+
+<!-- ========================= SECTION  ========================= -->
+<section class="section-name padding-y-sm">
+	<div class="container">
+
+		<header class="section-heading">
+			<!-- <a href="{% url 'store' %}" class="btn btn-outline-primary float-right">See all</a> -->
+			<h3 class="section-title">Popular products</h3>
+		</header><!-- sect-heading -->
+
+
+		<div class="row">
+			
+			<div class="product-carousel owl-carousel owl-theme">
+				{% for product in r_products %}
+			<div class="item">
+				<div class="card card-product-grid">
+					<a href="{{ product.get_url }}" class="img-wrap"> <img src="{{ product.images.url }}"> </a>
+					<figcaption class="info-wrap">
+						<a href="{{ product.get_url }}" class="title">{{ product.product_name }}</a>
+						<div class="price mt-1">{{ product.price }} {% trans 'сум' %}</div> <!-- price-wrap.// -->
+						<div class="rating-star">
+							<span>
+								<i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+							</span>
+						</div>
+					</figcaption>
+				</div>
+			</div> <!-- col.// -->
+			
+			{% endfor %}
+
+		</div>
+		
+		</div> <!-- row.// -->
+
+		<div class="container mt-5 mb-5">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="big-banner">
+						<img src="{% static 'images/banners/cover.jpg' %}" alt="">
+					</div>
+				</div>
+				<div class="col-md-3 small__banner">
+					<div class="small-banner">
+						<img src="{% static 'images/banners/cover.jpg' %}" alt="">
+					</div>
+				</div>
+				<div class="col-md-3 small__banner">
+					<div class="small-banner">
+						<img src="{% static 'images/banners/cover.jpg' %}" alt="">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<header class="section-heading pt-5">
+			<!-- <a href="{% url 'store' %}" class="btn btn-outline-primary float-right">See all</a> -->
+			<h3 class="section-title">New products</h3>
+		</header><!-- sect-heading -->
+		<div class="row">
+		
+			<div class="new-product-carousel owl-carousel owl-theme">
+				{% for product in products %}
+			<div class="item">
+				<div class="card card-product-grid">
+					<a href="{{ product.get_url }}" class="img-wrap"> <img src="{{ product.images.url }}"> </a>
+					<figcaption class="info-wrap">
+						<a href="{{ product.get_url }}" class="title">{{ product.product_name }}</a>
+						<div class="price mt-1">{{ product.price }} {% trans 'сум' %}</div> <!-- price-wrap.// -->
+						<div class="rating-star">
+							<span>
+								<i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+								<i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+							</span>
+						</div>
+					</figcaption>
+				</div>
+			</div> <!-- col.// -->
+			{% endfor %}
+		</div>
+			
+		</div> <!-- row.// -->
+	</div><!-- container // -->
+</section>
+<!-- ========================= SECTION  END// ========================= -->
+
+
+
+
+
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script>
+	$('.banner-carousel').owlCarousel({
+		loop: true,
+		margin: 10,
+		nav: true,
+		responsive: {
+			0: {
+				items: 1
+			},
+			600: {
+				items: 1
+			},
+			1000: {
+				items: 1
+			}
+		}
+	})	
+</script>
+<script>
+		$('.product-carousel').owlCarousel({
+		loop: false,
+		margin: 10,
+		nav: true,
+		dots:false,
+		responsive: {
+			0: {
+				items: 1
+			},
+			600: {
+				items: 2
+			},
+			1000: {
+				items: 4
+			}
+		}
+	})
+</script>
+<script>
+	$('.new-product-carousel').owlCarousel({
+		loop: false,
+		margin: 10,
+		nav: true,
+		dots:false,
+		responsive: {
+			0: {
+				items: 1
+			},
+			600: {
+				items: 2
+			},
+			1000: {
+				items: 4
+			}
+		}
+	})
+</script>
+</body>
+
+</html>
+
+{% endblock %}

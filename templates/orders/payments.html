@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block css %}
+    <style>
+        .aside img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .itemside {
+            display: flex;
+        }
+
+        .dlist-align {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info {
+            margin-left: 25px;
+        }
+
+        .price-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .font__size {
+            font-size: 18px;
+        }
+
+        .car__body {
+            padding: 0;
+        }
+
+        .car__body .table {
+            margin: 0;
+        }
+
+        .price-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cost__pro {
+            font-size: 15px
+        }
+
+        .price {
+            font-weight: bold;
+            font-size: 18px;
+            color: #000;
+            font-style: inherit;
+        }
+
+        .payment_img {
+            width: 150px;
+            display: inline-block;
+            float: left;
+        }
+
+        .payment_img {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.payment_img img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.payment_img a {
+    padding: 0 20px;
+    width: 150px;
+    border: 1px solid #e7e7e7;
+    height: 60px;
+    margin: 0 15px;
+    display: flex;
+    align-items: center;
+}
+    </style>
+{% endblock css %}
+
+{% include 'includes/alerts.html' %}
+
+{% block content %}
+
+
+    <section class="section-content padding-y bg">
+        <div class="container">
+
+            <!-- ============================ COMPONENT 1 ================================= -->
+            <h4 class="text-center mb-20">{% trans 'Review Your Order and Make Payment' %}</h4>
+            <div class="row">
+
+                <aside class="col-lg-8">
+                    <div class="card">
+                        <h5 class="card-header">{% trans 'Billing Address' %}</h5>
+                        <div class="card-body">
+                            <p class="card-text mb-0">{{ order.full_name }}</p>
+                            <p class="card-text mb-0">{{ order.full_address }}</p>
+                            {% if order.city %}
+                                <p class="card-text mb-0">{{ order.city }}, {{ order.state }}</p>
+                            {% endif %}
+                            {% if order.country %}
+                                <p class="card-text mb-0">{{ order.country }}</p>
+                            {% endif %}
+                            {% if order.email %}
+
+                                <p class="card-text mb-0">{{ order.email }}</p>
+
+                            {% endif %}
+                            <p class="card-text mb-0">{{ order.phone }}</p>
+                            {% if order.order_note %}
+                                <b>Order Note: </b> {{ order.order_note }}
+                            {% endif %}
+
+
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header">{% trans 'Payment Method' %}</h5>
+                        <div class="card-body">
+                            <p class="card-text">PayMe</p>
+
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header">{% trans 'Review Products' %}</h5>
+                        <div class="card-body car__body">
+                            <table class="table table-borderless table-shopping-cart">
+                                <thead class="text-muted">
+                                <tr class="small text-uppercase">
+                                    <th scope="col">{% trans 'Product' %}</th>
+                                    <th scope="col" width="120">{% trans 'Quantity' %}</th>
+                                    <th scope="col" width="120">{% trans 'Price' %}</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for cart_item in cart_items %}
+                                    <tr>
+                                        <td>
+                                            <figure class="itemside align-items-center">
+                                                 {% if not cart_item.product.images %}
+                                                    <img src="{% static 'images/logo-default.png' %}" class="img-sm" style="width:100px">
+                                                    {% else %}
+                                                    <img src="{% get_media_prefix %}{{ cart_item.product.images }}"
+                                                                        class="img-sm" style="width:100px">
+                                                    {% endif %}
+                                                <figcaption class="info">
+                                                    <a href="{{ cart_item.product.get_url }}"
+                                                       class="title text-dark">{{ cart_item.product.product_name }}</a>
+                                                    <p class="text-muted small">
+                                                        {% if cart_item.variations.all %}
+                                                            {% for item in cart_item.variations.all %}
+                                                                {{ item.variation_category | capfirst }} :
+                                                                {{ item.variation_value | capfirst }} <br>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </p>
+                                                </figcaption>
+                                            </figure>
+                                        </td>
+                                        <td>
+                                            <!-- col.// -->
+                                            <label class="font__size" for="">{{ cart_item.quantity }}</label>
+                                        </td>
+                                        <td>
+                                            <div class="price-wrap">
+                                                <var class="price">{{ cart_item.sub_total }} {% trans 'сум' %}</var>
+                                                <small class="text-muted cost__pro">{% if cart_item.reduced_price %}
+                                                    {{ cart_item.reduced_price }} {% trans 'сум' %}{% else %}
+                                                    {{ cart_item.product.price }} {% trans 'сум' %}{% endif %} </small>
+                                            </div> <!-- price-wrap .// -->
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </aside> <!-- col.// -->
+                <aside class="col-lg-4">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <dl class="dlist-align">
+                                <dt>{% trans 'Total price:' %}</dt>
+                                <dd class="text-right">{{ total|floatformat:2 }} {% trans 'сум' %}</dd>
+                            </dl>
+
+                            <dl class="dlist-align">
+                                <dt>{% trans 'Grand Total:' %}</dt>
+                                <dd class="text-right text-dark b">
+                                    <strong>{{ grand_total|floatformat:2 }} {% trans 'сум' %}</strong>
+                                </dd>
+                            </dl>
+                            <form action="" method="POST">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-sm" name="coupon-code"
+                                           placeholder="{% trans 'Coupon code' %}" value="">
+                                    <div class="input-group-prepend">
+
+                                        <button class="btn btn-sm" type="submit"
+                                                name="button">{% trans 'Apply' %}</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <hr>
+
+
+                            <div id="paypal-button-container"  class="payment_img">
+                                {#                                <button type="submit" class="btn  btn-primary">#}
+                                <a href="{{ click_url }}">
+                                <img src="{% static 'images/payments/click.jpg' %}">
+                                </a>
+                                <a href="{{ payme_url }}">
+                                    <img src="{% static 'images/payments/payme.svg' %}">
+                                </a>
+                                <a href="{% url 'order_complete' %}?order_number={{order.id}}">
+                                    <img src="{% static 'images/pay_in_cash.png' %}">
+                                    <p>{% trans 'Pay in cash' %}</p>
+                                </a>
+                            </div>
+
+                        </div> <!-- card-body.// -->
+                    </div> <!-- card.// -->
+                </aside> <!-- col.// -->
+
+
+            </div> <!-- row.// -->
+
+            <!-- ============================ COMPONENT 1 END .// ================================= -->
+
+        </div> <!-- container .//  -->
+    </section>
+    <!-- ========================= SECTION CONTENT END// ========================= -->
+
+    <script>
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var amount = "{{ grand_total }}"
+        var url = "{% url 'payments' %}"
+        var csrftoken = getCookie('csrftoken');
+        var orderID = "{{order.order_number}}"
+        var payment_method = 'PayPal'
+        var redirect_url = "{% url 'order_complete' %}"
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+
+            style: {
+                color: 'blue',
+                shape: 'rect',
+                label: 'pay',
+                height: 40
+            },
+
+            // Set up the transaction
+            createOrder: function (data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: amount,
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function (data, actions) {
+                return actions.order.capture().then(function (details) {
+                    // Show a success message to the buyer
+                    console.log(details);
+                    sendData();
+
+                    function sendData() {
+                        fetch(url, {
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json",
+                                "X-CSRFToken": csrftoken,
+                            },
+                            body: JSON.stringify({
+                                orderID: orderID,
+                                transID: details.id,
+                                payment_method: payment_method,
+                                status: details.status,
+                            }),
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                window.location.href = redirect_url + '?order_number=' + data.order_number + '&payment_id=' + data.transID;
+                            });
+                    }
+                });
+            }
+
+
+        }).render('#paypal-button-container');
+    </script>
+
+    <script>
+        setInterval(() => {
+            fetch("{% url 'order_status_check' %}?order_id={{order.id}}").then((res) => res.json()).then((data) => {
+                console.log(data);
+                if(data["status"] === true){
+                    window.location = "{% url 'order_complete' %}";
+                }
+            })
+        }, 1000);
+    </script>
+
+{% endblock %}
